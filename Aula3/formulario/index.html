@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de pessoas</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <script src="../../lib/vue.js" type="text/javascript"></script>
+
+    <style>
+      i[data-icon="icon-button"] {
+        cursor: pointer;
+      }
+
+      i[data-icon="icon-button"]:hover {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Cadastro pessoal</a>
+      </div>
+    </nav>
+    <div id="app">
+      <div
+        v-if="exibirMensagem"
+        class="alert alert-success m-2"
+        style="display: flex; justify-content: space-between"
+      >
+        {{mensagem}}
+
+        <i
+          data-icon="icon-button"
+          @click="ocultarMensagem"
+          class="bi bi-x-lg"
+        ></i>
+      </div>
+      <div class="container mt-2">
+
+        <form v-if="modo >= 1" action="">
+          <div  class="card p-2"> <!--card da edição de dados-->
+            <div class="row">
+              <div class="col-6">
+                <label class="form-label" for="txtNome">Nome</label>
+                <input
+                  class="form-control"
+                  id="txtNome"
+                  type="text"
+                  v-model="pessoa.nome" required
+                />
+              </div>
+              <div class="col-3">
+                <label class="form-label" for="txtCpf">CPF</label>
+                <input
+                  class="form-control"
+                  id="txtCpf"
+                  type="text"
+                  placeholder="formato: 00000000000"
+                  v-model="pessoa.cpf"
+                />
+              </div>
+              <div class="col-3">
+                <label class="form-label" for="dtaNascimento"
+                  >Data Nascimento</label
+                >
+                <input
+                  class="form-control"
+                  id="dtaNascimento"
+                  type="date"
+                  placeholder="formato: 00000000000"
+                  v-model="pessoa.dtNascimento"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col form-check m-2">
+                <input id="chkAtivo" type="checkbox" v-model="pessoa.ativo" />
+                <label for="chkAtivo">Ativo</label>
+              </div>
+            </div>
+  
+            <div class="card p-2 mt-2">
+              <div>
+                <input
+                  id="rdbMasculino"
+                  class="form-check-input"
+                  value="M"
+                  name="genero"
+                  type="radio"
+                  v-model="pessoa.genero"
+                />
+                <label class="form-label" for="rdbMasculino">Masculino</label>
+  
+                <input
+                  id="rdbFeminino"
+                  class="form-check-input"
+                  value="F"
+                  name="genero"
+                  type="radio"
+                  v-model="pessoa.genero"
+                />
+                <label class="form-label" for="rdbFeminino">Feminino</label>
+              </div>
+            </div>
+            <div class="card mt-2 p-2">
+              <label class="form-label" for="selEstadoCivil">Estado Civil</label>
+              <select
+                class="form-select"
+                name="selEstadoCivil"
+                id="selEstadoCivil"
+                v-model="pessoa.estadoCivil"
+              >
+                <option value="S">Solteiro</option>
+                <option value="C">Casado</option>
+                <option value="D">Divorciado</option>
+                <option value="V">Viúvo</option>
+              </select>
+            </div>
+  
+            {{pessoa}}
+            <br />
+            {{pessoas}}
+  
+            <div class="m-2">
+              <input @click="salvar" class="btn btn-primary" type="submit" value="Salvar" />
+              <!-- <button @click="salvar" type="button" class="btn btn-primary">
+                Salvar
+              </button> -->
+              <button @click="cancelar" type="button" class="btn btn-secondary">
+                Cancelar
+              </button>
+            </div>
+          </div> <!--fim da edição-->
+        </form>
+
+        
+        <div v-else> <!--listagem dos dados-->
+          <h3>Pessoas cadastradas</h3>
+          <div>
+            <input @input="pesquisar($event)" type="text" placeholder="pesquisar">
+          </div>
+          <button @click="novo" type="button" class="btn btn-success">
+            Criar novo
+          </button>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Cpf</th>
+                <th>Ativo</th>
+                <th>#</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for='(p, i) in pessoas' :key="p.codigo">
+                <td>{{ p.nome }}</td>
+                <td>{{ p.cpf }}</td>
+                <td><span>{{p.ativo ? 'Sim' : 'Não'}}</span></td> 
+                <td>
+                  <button @click="alterar(p)" class="btn btn-link">Alterar</button>
+                  <button @click="excluir(i)" class="btn btn-danger">Excluir</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const options = {
+        el: "#app",
+        data: {
+          mensagem: "Seja bem vindo.",
+          exibirMensagem: true,
+          pessoa: {
+            nome: "",
+            cpf: "",
+            dtNascimento: new Date().toISOString().substring(0, 10),
+            genero: "M",
+            estadoCivil: "S",
+            ativo: true
+          },
+          pessoas: [],
+          pessoasTemp: [],
+          modo: 0,
+          textoAtivo: 'Ativo'
+        },
+        methods: {
+          ocultarMensagem: function () {
+            this.exibirMensagem = false;
+          },
+          salvar: function () {
+
+            if(this.modo == 1){
+              this.pessoa.codigo = this.pessoas.length + 1;
+              this.pessoas.push(this.pessoa);
+            }
+            
+            this.limparPessoa();
+            this.modo = 0;
+          },
+          cancelar: function () {
+            this.limparPessoa();
+            this.modo = 0;
+          },
+          limparPessoa: function () {
+            this.pessoa = {
+              codigo: 0,
+              nome: "",
+              cpf: "",
+              dtNascimento: new Date().toISOString().substring(0, 10),
+              genero: "M",
+              estadoCivil: "S",
+              ativo: true,
+            };
+          },
+          novo: function(){
+            this.limparPessoa();
+            this.modo = 1;            
+          },
+          alterar: function(objPessoa){
+            this.pessoa = objPessoa;
+            this.modo = 2;
+          },
+          excluir: function(indice){
+            if(confirm('Deseja realmente exluir este registro:')){
+              this.pessoas.splice(indice, 1);
+            } 
+          },
+          pesquisar: function(e){
+            if(this.pessoasTemp.length === 0){
+              this.pessoasTemp = this.pessoas;
+            }
+
+            if(e.target.value != ''){
+              this.pessoas = this.pessoas.filter(x => x.nome.startsWith(e.target.value));
+            }
+            else{
+              this.pessoas = this.pessoasTemp;
+            }
+          }
+
+        },
+      };
+
+      const vm = new Vue(options);
+    </script>
+  </body>
+</html>
