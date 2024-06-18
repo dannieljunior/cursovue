@@ -1,0 +1,84 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+header{
+    background-color: tomato;
+    border-top: 8px solid yellow;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+}
+
+a{
+    text-decoration: none;
+    margin: 16px 16px;
+}
+
+.app-titulo{
+    font-size: 1.5rem;
+    margin: 8px 24px;
+}
+
+main{
+    margin: 16px;
+}
+
+ul{
+    background-color: blue;
+    list-style: none;
+}
+
+ul li{
+    padding: 8px;
+    border-bottom: 1px solid #fff;
+    cursor: pointer;
+}
+
+ul li:hover{
+    color: red;
+    transition: 0.6ms;
+}
+
+.dv-produtos{
+    display: flex;
+}
+
+#dv-categorias{
+    flex: 2;
+    padding: 8px;
+}
+
+#dv-lista-produtos{
+    flex: 8;
+    display: grid;
+    padding: 8px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.dv-produto{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.dv-produto:hover{
+    margin-top: -16px;
+    transition: 0.12ms;
+}
+
+.dv-produto > span{
+    font-size: 1.5rem;
+}
+
+.dv-produto .preco{
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.img-produto{
+    width: 125px;
+    height: 125px;
+}
