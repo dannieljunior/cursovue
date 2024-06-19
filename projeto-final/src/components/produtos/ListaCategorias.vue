@@ -1,7 +1,7 @@
 <template>
     <div id="dv-categorias">
-      <ul v-for="i in items" :key="i.id">
-        <li @click="selecionarCategoria(i.id)">{{i.categoria}}</li>
+      <ul v-for="categoria in categorias" :key="categoria">
+        <li @click="selecionarCategoria(categoria)">{{categoria}}</li>
       </ul>
     </div>
 </template>
@@ -12,21 +12,25 @@ export default{
     name: "listaCategorias",
     props: ["items"],
     methods:{
-      selecionarCategoria: function(id){
-        console.log(id);
-        this.$emit("aoSelecionarCategoria", id)
+      selecionarCategoria: function(categoria){
+        this.$emit("aoSelecionarCategoria", categoria)
       }
     },
-    // data(){
-    //   return{
-    //     categorias: []
-    //   }
-    // },
-    created:{
-      // fetch('https://fakestoreapi.com/products/categories')
-      //       .then(res=>res.json())
-      //       .then(json=>console.log(json))
+    data(){
+      return{
+        categorias: []
+      }
+    },
+    created(){
+      fetch('https://fakestoreapi.com/products/categories')
+            .then(res=>res.json())
+            .then(json=>{
+              this.categorias = json;
+            })
+            .catch(e => console.log(e));
     }
+
+
 }
 
 </script>

@@ -1,36 +1,55 @@
 <template>
   <h1>Produtos</h1>
   <div class="dv-produtos">
-    <ListaCategorias @aoSelecionarCategoria="teste(id)" :items="categorias"></ListaCategorias>
-    <ListaProdutos :categoriaSelecionada="categoriaSelecionada" :produtos="produtos"></ListaProdutos>
+    <ListaCategorias @aoSelecionarCategoria="selecionarCategoria"></ListaCategorias>
+    <ListaProdutos @aoSelecionarProduto="selecionarProduto" :produtos="produtos"></ListaProdutos>
   </div>
+
+
+  <modal-component @aoFechar="showModal = false" :visible="showModal">
+        <detalhe-produto @aoAdicionar="adicionarAoCarrinho" :produto="produtoSelecionado"></detalhe-produto>
+    </modal-component>
+
 </template>
 
 <script>
+    import ModalComponent from '@/components/ModalComponent.vue'
     import ListaCategorias from "../components/produtos/ListaCategorias.vue"
     import ListaProdutos from "../components/produtos/ListaProdutos.vue"
+    import DetalheProduto from '@/components/produtos/DetalheProduto.vue'
+
+    import carrinho from "@/services/cartService.js"
 
     export default{
         name: "productsView",
-        components:{
-            ListaCategorias, ListaProdutos
-        },
+        components:{ListaCategorias, ListaProdutos, ModalComponent, DetalheProduto},
         data(){
             return {
-                categoriaSelecionada: 0,
-                categorias:[
-                    {id: 1, categoria: "Eletrodomésticos"},
-                    {id: 2, categoria: "Calçados"},
-                ],
-                produtos:[
-                    {id: 1, descricao: "Geladeira", categoria: 1, imagem: "https://consul.vtexassets.com/arquivos/ids/225203-800-auto?v=637938611258200000&width=800&height=auto&aspect=true", preco: 2999.00},
-                    {id: 2, descricao: "Tênis", categoria: 2, imagem: "https://gaston.vtexassets.com/arquivos/ids/444740/Tenis-Adidas-Branco-e-Preto-Grand-Court-Base-20-Feminino.jpg?v=638319486467800000", preco: 399.00},
-                ]
+                produtoSelecionado: {},
+                produtos:[],
+                showModal: false
             }
         },
         methods:{
-            teste: function(id){
-                alert(id);
+            selecionarCategoria: function(categoria){
+                fetch(`https://fakestoreapi.com/products/category/${categoria}`)
+                    .then(res=>res.json())
+                    .then(json=> {
+                        this.produtos = json;
+                    })
+            },
+            selecionarProduto: function(produtoId){ 
+                fetch(`https://fakestoreapi.com/products/${produtoId}`)
+                    .then(res=>res.json())
+                    .then(result=> {
+                        this.produtoSelecionado = result;
+                        this.showModal = true;
+                    })
+                    .catch(e => console.error(e));
+            },
+            adicionarAoCarrinho: function(){
+                carrinho.addToCart(this.produtoSelecionado);
+                alert("Produto adicionado ao pedido");
             }
         }
     }
